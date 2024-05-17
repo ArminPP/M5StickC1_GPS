@@ -55,6 +55,31 @@ void loop()
         while (true)
             ;
     }
+
+    if (M5.Axp.GetVBusVoltage() < 2.5) // USB power is plugged off
+    {
+        TFT.fillScreen(RED);
+        TFT.setTextFont(4);
+        TFT.setTextSize(1);
+        TFT.setTextColor(YELLOW, RED);
+        for (int i = 5; i > 0; i--)
+        {
+            TFT.setCursor(20, 60);
+            TFT.printf("Shut Down in %is ", i);
+
+            for (int j = 0; j < 100; j++)
+            {
+                delay(10);
+                if (M5.Axp.GetVBusVoltage() > 2.5)
+                {
+                    TFT.fillScreen(BLACK);
+                    return;
+                }
+            }
+        }
+
+        M5.Axp.PowerOff();
+    }
 }
 
 void showGPSvalues()
@@ -93,7 +118,7 @@ void showGPSvalues()
             TFT.setTextSize(1);
             TFT.setTextColor(WHITE, BLACK);
 
-            TFT.drawString(dt, 10, 100, dateFont);
+            TFT.drawString(dt, 1, 100, dateFont);
         }
         else
         {
