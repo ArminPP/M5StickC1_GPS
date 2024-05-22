@@ -1,3 +1,41 @@
+/*
+
+####################
+# M5Stack Unit GPS #
+####################
+
+SEE: 3.2 NMEA Extension in AT3340.ProductManual.pdf
+'''''''''''''''''''''''''''''''''''''''''''''''''''
+
+$PCAS02,100*1E/r/n   			// 10 hz
+$PCAS02,1000*2E/r/n 			// 1 Hz
+$PCAS01,5*19/r/n   			    // Baud Rate 115200
+$PCAS11,3*1E/r/n    		    // Dynamic Model: Automotive
+
+$PCAS00*01/r/n					//save configuration	
+
+PCAS03,1,1,1,1,1,1,0,0*02/r/n	// GGA,GGL,GSA,GSV,RMC,VTG=on,ZDA=off
+$PCAS03,0,0,0,0,1,0,0,0*03/r/n	// RMC=on ONLY! (no $GPTXT,01,01,01,ANTENNA OPEN*25 ANYMORE !!!!!!)
+
+
+Additional this codes are also working:
+BA CE 04 00 06 01 4E 00 00 00 52 00 06 01/r/n // GGA off
+BA CE 04 00 06 01 4E 00 01 00 52 00 07 01/r/n // GGA on 
+
+BA CE 04 00 06 01 4E 01 00 00 52 01 06 01/r/n // GLL off
+BA CE 04 00 06 01 4E 02 00 00 52 02 06 01/r/n // GSA off
+
+BA CE 04 00 06 01 4E 03 00 00 52 03 06 01/r/n // GSV off
+BA CE 04 00 06 01 4E 05 00 00 52 05 06 01/r/n // VTG off
+BA CE 04 00 06 01 4E 08 00 00 52 08 06 01/r/n // ZDA off
+BA CE 04 00 06 01 4E 07 00 00 52 07 06 01/r/n // GSD off
+
+BA CE 04 00 06 01 4E 04 00 00 52 04 06 01/r/n // RMC off
+BA CE 04 00 06 01 4E 04 0A 00 52 04 10 01/r/n // RMC on 10x
+BA CE 04 00 06 01 4E 04 01 00 52 04 07 01/r/n // RMC on 1x (high speed)  Recommended minimum navigation transmission data
+*/
+
+
 #include <Arduino.h>
 #include <M5StickC.h>
 #include <M5GFX.h>
@@ -91,7 +129,7 @@ void showGPSvalues()
         if (GPS.speed.isValid())
         {
             char speedKMH[5] = {'\0'};
-            snprintf(speedKMH, sizeof(speedKMH), "%5.1f ", GPS.speed.kmph());
+            snprintf(speedKMH, sizeof(speedKMH), "%5.1f  ", GPS.speed.kmph());
 
             Serial.print(speedKMH);
             Serial.print(" | ");
