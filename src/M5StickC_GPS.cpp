@@ -1,11 +1,13 @@
 /*
 
-####################
-# M5Stack Unit GPS #
-####################
+###########################
+# M5Stack Unit GPS AT6558 #
+###########################
 
 SEE: 3.2 NMEA Extension in AT3340.ProductManual.pdf
 '''''''''''''''''''''''''''''''''''''''''''''''''''
+
+The changes can be stored permanetly in the internal flash.
 
 $PCAS02,100*1E/r/n   			// 10 hz
 $PCAS02,1000*2E/r/n 			// 1 Hz
@@ -16,6 +18,18 @@ $PCAS00*01/r/n					//save configuration
 
 PCAS03,1,1,1,1,1,1,0,0*02/r/n	// GGA,GGL,GSA,GSV,RMC,VTG=on,ZDA=off
 $PCAS03,0,0,0,0,1,0,0,0*03/r/n	// RMC=on ONLY! (no $GPTXT,01,01,01,ANTENNA OPEN*25 ANYMORE !!!!!!)
+
+#################
+# U-BLOX NEO M7 #
+#################
+
+This device has no internal flash storage, always change the parameters during setup!
+
+
+// TODO                          .
+uBlox NEO 7M
+
+B5 62 06 08 06 00 64 00 01 00 01 00 7A 12   // 10 hz
 
 
 Additional this codes are also working:
