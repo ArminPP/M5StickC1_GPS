@@ -188,8 +188,9 @@ void showGPSvalues()
     {
         if (GPS.speed.isValid())
         {
-            char speedKMH[5] = {'\0'};
+            char speedKMH[6] = {'\0'};
             snprintf(speedKMH, sizeof(speedKMH), "%5.1f  ", GPS.speed.kmph());
+            // snprintf(speedKMH, sizeof(speedKMH), "%5.1f  ", 188.8);
 
             Serial.print(speedKMH);
             Serial.print(" | ");
