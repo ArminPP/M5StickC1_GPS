@@ -23,7 +23,7 @@ $PCAS03,0,0,0,0,1,0,0,0*03/r/n	// RMC=on ONLY! (no $GPTXT,01,01,01,ANTENNA OPEN*
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 test.xx_cppppc LINE 938ff is some code !!!!!!!!!!!!!!!!!!!
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''' 
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 
@@ -66,6 +66,7 @@ const lgfx::GFXfont *unitFont  = &fonts::FreeSans9pt7b;
 const lgfx::GFXfont *dateFont  = &fonts::FreeSans12pt7b;
 const lgfx::GFXfont *timeFont  = &fonts::FreeSans12pt7b;
 
+#ifdef UBLOX
 const byte ClearConfig[] = {0xB5, 0x62, 0x06, 0x09, 0x0D, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0x01, 0x19, 0x98};
 const byte GPGLLOff[]    = {0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0xF0, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x2B};
 const byte GPGSVOff[]    = {0xB5, 0x62, 0x06, 0x01, 0x08, 0x00, 0xF0, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x03, 0x39};
@@ -77,6 +78,19 @@ const byte Navrate10hz[] = {0xB5, 0x62, 0x06, 0x08, 0x06, 0x00, 0x64, 0x00, 0x01
 const byte baud115200[]  = {0xb5, 0x62, 0x06, 0x00, 0x14, 0x00, 0x01, 0x00, 0x00, 0x00, 0xd0, 0x08, 0x00, 0x00, 0x00, 0xc2, 0x01,
                             0x00, 0x07, 0x00, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0xc4, 0x96, 0xb5, 0x62, 0x06, 0x00, 0x01};
 const byte RXM_MAXP[]    = {0xB5, 0x62, 0x06, 0x11, 0x02, 0x00, 0x08, 0x00, 0x21, 0x91}; // Max Performance Mode
+
+#else
+
+const char *Navrate10hz     = "$PCAS02,100*1E\r\n";             // 10 hz
+const char *Navrate1hz      = "$PCAS02,1000*2E\r\n";            // 1 Hz
+const char *baud115200      = "$PCAS01,5*19\r\n";               // Baud Rate 115200
+const char *ModelAutomotive = "$PCAS11,3*1E\r\n";               // Dynamic Model: Automotive
+const char *ModeZDA         = "$PCAS03,1,1,1,1,1,1,0,0*02\r\n"; // GGA,GGL,GSA,GSV,RMC,VTG=on,ZDA=off ZDA=UTCtime,day,month,year,ltzh,ltzn*CS
+const char *ModeRMC         = "$PCAS03,0,0,0,0,1,0,0,0*03\r\n"; // RMC=on ONLY! (no $GPTXT,01,01,01,ANTENNA OPEN*25 ANYMORE !)
+                                                                // RMC=UTCtime,status,lat,uLat,lon,uLon,spd,cog,date,mv,mvE,mode*CS
+const char *SaveConfig = "$PCAS00*01\r\n";                      // save configuration
+
+#endif
 
 // forward declarations
 void showGPSvalues();
@@ -94,6 +108,7 @@ void setup()
 
     delay(2000); // wait, if car is started ...
 
+#ifdef UBLOX
     Serial.println("GNSS: starting with 9600 baud");
     GPS_SER.begin(9600, SERIAL_8N1, 32, 33);
 
@@ -102,9 +117,9 @@ void setup()
 
     Serial.println("GNSS: set to 115200 baud");
     GPS_SER.updateBaudRate(115200);
+    delay(100);
 
     Serial.println("GNSS: disable not needed messages");
-    delay(100);
     sendPacket(GPGLLOff, sizeof(GPGLLOff));
     delay(100);
     sendPacket(GPGSVOff, sizeof(GPGSVOff));
@@ -119,6 +134,34 @@ void setup()
     delay(100);
     sendPacket(RXM_MAXP, sizeof(RXM_MAXP));
     delay(100);
+#else
+    Serial.println("GNSS: starting with 9600 baud");
+    GPS_SER.begin(9600, SERIAL_8N1, 32, 33);
+
+    GPS_SER.print(baud115200);
+    delay(100);
+
+    Serial.println("GNSS: set to 115200 baud");
+    GPS_SER.updateBaudRate(115200);
+    delay(100);
+
+    Serial.println("GNSS: disable not needed messages");
+    GPS_SER.print(ModeRMC);
+    delay(100);
+
+    Serial.println("GNSS: 10Hz Nav Rate");
+    GPS_SER.print(Navrate10hz);
+    delay(100);
+
+    Serial.println("GNSS: Dynamic Model: Automotive");
+    GPS_SER.print(ModelAutomotive);
+    delay(100);
+
+    Serial.println("GNSS: save configuration");
+    GPS_SER.print(SaveConfig);
+    delay(100);
+
+#endif
 }
 
 void loop()
