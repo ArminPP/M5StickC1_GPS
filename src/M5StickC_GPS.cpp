@@ -136,7 +136,7 @@ void setup()
     delay(100);
 #else
     Serial.println("GNSS: starting with 9600 baud");
-    GPS_SER.begin(9600, SERIAL_8N1, 32, 33);
+    GPS_SER.begin(9600, SERIAL_8N1, 33, 32); // Wires crossed!
 
     GPS_SER.print(baud115200);
     delay(100);
